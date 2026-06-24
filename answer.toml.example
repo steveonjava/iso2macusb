@@ -1,0 +1,39 @@
+# answer.toml.example — Proxmox VE automated-install answer file
+# Docs: https://pve.proxmox.com/wiki/Automated_Installation
+# Validate with:  proxmox-auto-install-assistant validate-answer answer.toml
+#
+# SECURITY: never commit a real answer.toml with secrets. The root password is a
+# *hash* (generate: `mkpasswd -m yescrypt`), but SSH keys, FQDNs, and network
+# details are still sensitive. Keep your real file out of version control.
+
+[global]
+keyboard = "en-us"
+country = "us"
+fqdn = "proxmox.example.local"
+mailto = "admin@example.com"
+timezone = "America/Los_Angeles"
+reboot-on-error = false
+# Generate with: mkpasswd -m yescrypt   (from the 'whois' package)
+root-password-hashed = "REPLACE_WITH_YESCRYPT_HASH"
+# So SSH works on first boot:
+root-ssh-keys = ["ssh-ed25519 AAAA...replace-with-your-key admin@host"]
+
+[network]
+# 'from-dhcp' captures the lease and writes a STATIC config matching it.
+source = "from-dhcp"
+
+[disk-setup]
+filesystem = "zfs"
+zfs.raid = "raid0"          # single disk; use raid1/raid10/raidz* for multiple
+zfs.ashift = 12
+zfs.compress = "lz4"
+zfs.checksum = "on"
+zfs.copies = 1
+# Select disk(s) by a stable property, NOT by device name (sdX can reorder).
+# Find candidates with: proxmox-auto-install-assistant device-info
+filter.ID_MODEL = "*YOUR_SSD_MODEL*"
+
+[first-boot]
+# 'from-iso' runs your --on-first-boot script embedded in the ISO.
+source = "from-iso"
+ordering = "fully-up"

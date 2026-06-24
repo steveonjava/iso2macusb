@@ -1,0 +1,7 @@
+# Never commit secrets or build artifacts
+answer.toml
+*.iso
+*.img
+*.img.*
+*.sha256
+firstboot.sh
